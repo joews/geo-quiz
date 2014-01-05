@@ -4,24 +4,56 @@
 <head>
   <meta charset="utf-8" />
   <title>Geo Quiz</title>
-  <link href='http://fonts.googleapis.com/css?family=Alegreya+Sans+SC' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" />
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" />
   <link href="style.css" rel="stylesheet">
 </head>
 
 <body>
-  <h1>Geo Quiz</h1>
-  <h2>UK Counties</h2>
-  <div id="map"></div>
-  <div id="questions"></div>
-  <div id="progress"></div>
+  <header>
+    <h1>Geo Quiz <small>English Counties</small></h1>
+  </header>
+
+  <div id="content" class="container">
+    <div class="row">
+      <div id="map" class="col-md-6"></div>
+      <div class="col-md-6">
+        <div id="questions">
+          <p>Which county is this?</p>
+          <ul>
+            <li>Lincolnshire</li>
+            <li>Yorkshire</li>
+            <li>Cambridgeshire</li>
+            <li>Sussex</li>
+          </ul>
+        </div>
+
+        <div id="progress">
+          <p>Question <strong>2</strong> of <strong>10</strong></p>
+          <div class="progress progress-striped active">
+            <div class="progress-bar"  role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+              <span class="sr-only">20% Complete</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
 
   <script src="http://code.jquery.com/jquery-2.0.3.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.0/backbone-min.js"></script>
   <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
+
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
   
   <!-- tmp! -->
   <script src="data/uk-topo.js"></script>
+  <script src="data/uk-counties-topo.js"></script>
 
   <script src="app.js"></script>
 
