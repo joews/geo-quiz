@@ -1,39 +1,52 @@
-/** Constructor function for a dataset comprising a map and a set of possible questions **/
 var GQ = GQ || {}
 
 //Currently hard-coded to EN counties
-GQ.dataset = function() {
+GQ.Dataset = Backbone.Model.extend({
 
-  //Init logic
-  //TMP! global
-  var topoJson = gqData.uk_counties,
-      geoJson = topojson.feature(topoJson, topoJson.objects['uk-counties'] );
+  //TMP!
+  defaults: {
+    topoJson: gqData.uk_counties,
+    objectSet: 'uk-counties'
+  },
 
-  function randomInt(min, max) {
+
+
+  initialize: function() {
+    var topoJson = this.get('topoJson'),
+        geoJson = topojson.feature(topoJson, 
+            topoJson.objects[this.get('objectSet')] );
+
+    this.set('geoJson', geoJson)
+  },
+
+  //TODO: move to a utility object
+  randomInt: function(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
-  }
+  },
 
-  var nFeatures = geoJson.features.length;
-  function randomFeature() {
-    var index = randomInt(0, nFeatures - 1);
+  randomFeature: function() {
+    var geoJson = this.get('geoJson'),
+        nFeatures = geoJson.features.length,
+        index = this.randomInt(0, nFeatures - 1);
     return geoJson.features[index];
-  }
+  },
 
-  function _nextQuestion() {
-    var answerFeature = randomFeature(),
+  randomQuestion: function() {
+    var answerFeature = this.randomFeature(),
         optionFeatures = [answerFeature],
         randomOptionFeature;
 
     //TODO: n options
     _.times(3, function() {
       //Make sure we don't re-select the answer feature
+      //TODO: avoid re-selecting the same answer feature within a quiz
       randomOptionFeature = answerFeature;
       while(randomOptionFeature == answerFeature) {
-        randomOptionFeature = randomFeature();
+        randomOptionFeature = this.randomFeature();
       }
 
       optionFeatures.push(randomOptionFeature);
-    });
+    }, this);
 
     var answer = answerFeature.properties.NAME,
         options = _.chain(optionFeatures)
@@ -43,25 +56,19 @@ GQ.dataset = function() {
                     .shuffle()
                     .value();
 
-    return new GQ.question({ feature: answerFeature, 
+    return new GQ.Question({ feature: answerFeature, 
                               text: "Which county is this?", 
                               options: options, 
                               answer: answer});
-  }
+  },
 
-  function _getMapView() {
+  //TODO: params!
+  getMapView: function() {
     return { lat: 53, lon: -2, alt: 6 }
+  },
+
+  getFeatures: function() {
+    return this.get('geoJson');
   }
 
-  //Get geojson featuures
-  function _getFeatures() {
-    return geoJson;
-  }
-
-  return {
-    nextQuestion: _nextQuestion,
-    getMapView: _getMapView,
-    getFeatures: _getFeatures,
-  }
-
-};
+});

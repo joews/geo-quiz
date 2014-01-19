@@ -2,7 +2,8 @@
 var GQ = GQ || {};
 
 //This is a "highlight the area, what is it?" question
-GQ.question = Backbone.Model.extend({
+//Other types of question will need other Question implementations
+GQ.Question = Backbone.Model.extend({
 
   //feature, text, options and answer should be provided
   defaults: {
@@ -15,12 +16,12 @@ GQ.question = Backbone.Model.extend({
   },
 
   answer: function(givenAnswer) {
-    var correct = (givenAnswer === this.get('answer'));
+    var isCorrect = (givenAnswer === this.get('answer'));
     this.set({
-      correct: correct,
+      correct: isCorrect,
       givenAnswer: givenAnswer
     });
 
-    this.trigger('answer');
+    this.trigger('answer', isCorrect);
   },
 });

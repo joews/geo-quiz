@@ -1,6 +1,5 @@
 /* The view for a single question */
-//TODO: customise this per question type?
-// in that case, should this also include the map?
+//TODO: instances for different question types
 var GQ = GQ || {};
 
 GQ.QuestionView = Backbone.View.extend({
@@ -17,7 +16,6 @@ GQ.QuestionView = Backbone.View.extend({
 	answer: function(e) {
 		var option = $(e.target).attr('data-option');
 		this.model.answer(option); 
-
 		return this;
 	},
 

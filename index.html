@@ -17,13 +17,20 @@
 
   <div class="container">
     <div class="row">
-      <div id="map" class="col-md-6"></div>
-      <div class="col-md-6" id="content">
-        <div id="progress">
+
+      <section id="quiz-view">
+        <div id="map" class="col-md-6"></div>
+        <div class="col-md-6" id="content">
+          <div id="progress">
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section id="menu-view">
+        <!-- TODO -->
+      </section>
     </div>
-  </section>
+  </div>
 
   <script type="text/template" id="template-question">
     <p><%= text %></p>
@@ -37,9 +44,9 @@
   </script>
 
   <script type="text/template" id="template-progress">
-    <p>Question <strong><%= currentQuestion %></strong> of <strong><%= nQuestions %></strong></p>
+    <p>Question <strong><%= currentQuestionNumber + 1 %></strong> of <strong><%= nQuestions %></strong></p>
     <div class="progress progress-striped active">
-      <div class="progress-bar"  role="progressbar" aria-valuenow="<%= currentQuestion - 1 %>" aria-valuemin="0" aria-valuemax="<%= nQuestions %>" style="width: <%= ((currentQuestion - 1) / nQuestions * 100) +'%' %>">
+      <div class="progress-bar"  role="progressbar" aria-valuenow="<%= currentQuestionNumber %>" aria-valuemin="0" aria-valuemax="<%= nQuestions %>" style="width: <%= (currentQuestionNumber / nQuestions * 100) +'%' %>">
       </div>
     </div>
   </script>
@@ -64,11 +71,14 @@
   <script src="app/data/uk-topo.js"></script>
   <script src="app/data/uk-counties-topo.js"></script>
 
+  <!-- todo: require.js -->
   <script src="app/model/Question.js"></script>
   <script src="app/model/Dataset.js"></script>
-  <script src="app/model/Progress.js"></script>
+  <script src="app/model/Quiz.js"></script>
   <script src="app/view/ProgressView.js"></script>
   <script src="app/view/CompleteView.js"></script>
+  <script src="app/view/QuizView.js"></script>
+  <script src="app/view/MapView.js"></script>
   <script src="app/view/QuestionView.js"></script>
   <script src="app/app.js"></script>
 
