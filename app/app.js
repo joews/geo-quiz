@@ -1,22 +1,34 @@
 $(function() {
-	//Temporary main app logic - start a demo quiz
 
-	var $el = $('#view'),
-		activeView;
+	//TODO: router
+	var activeView;
 
 	function showView(view) {
 		if(activeView) activeView.remove();
-		$el.append(view.render().$el);
-		this.activeView = view;
+		view.render().$el.show();
+		activeView = view;
 	}
 
-	//TODO: routing!
-	//TODO: A MenuView that allows you to select a dataset,
-	// and thu	s create a a quiz
-	var dataset = new GQ.Dataset(),
-		quiz = new GQ.Quiz({ dataset: dataset, nQuestions: 10 }),
-		view = new GQ.QuizView({ model: quiz });
+	function startQuiz(dataset, features) {
+		console.log("startQuiz");
 
-	showView(view);
+		var quiz = new GQ.Quiz({ dataset: dataset, nQuestions: 10 }),
+			view = new GQ.QuizView({ model: quiz });
+		showView(view);
+	}
+
+	//TODO: extract MapView to the top level - ALL
+	// views always have a map, at all times
+	// When we click on a potential dataset, we move the 
+	// map to that datasets's mapView.
+	var datasetList = new GQ.DatasetList(GQ.datasets);
+	datasetList.each(function(dataset) {
+		dataset.on('loaded', function(features) {
+			console.log("loaded");
+			startQuiz(dataset, features);
+		});
+	}, this);
+
+	showView(new GQ.MenuView({ model: datasetList }));
 
 });

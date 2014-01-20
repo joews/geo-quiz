@@ -1,23 +1,34 @@
 var GQ = GQ || {}
 
-//Currently hard-coded to EN counties
 GQ.Dataset = Backbone.Model.extend({
 
-  //TMP!
   defaults: {
-    topoJson: gqData.uk_counties,
-    objectSet: 'uk-counties'
+    name: '',
+    description: '',
+    url: '',
+    objectSet: '',
+    nameAttribute: 'NAME',
+    featureType: '',
+    mapView: { lat: 90, lon: 0, alt: 8 }
   },
 
+  //Lazy load map data
+  fetchGeoJson: function() {
+    if(this.get('geoJson')) {
+      this.trigger('loaded', this.get('geoJson'));
+    } else {
+      $.getJSON(this.get('url'), function(topoJson) {
+        var geoJson = topojson.feature(topoJson, 
+                topoJson.objects[this.get('objectSet')] );
 
-
-  initialize: function() {
-    var topoJson = this.get('topoJson'),
-        geoJson = topojson.feature(topoJson, 
-            topoJson.objects[this.get('objectSet')] );
-
-    this.set('geoJson', geoJson)
+        this.set('geoJson', geoJson)
+        this.trigger('loaded', geoJson);
+      }.bind(this));
+    }
   },
+
+  //Remaining methods should not be called 
+  // until the data is loaded 
 
   //TODO: move to a utility object
   randomInt: function(min, max) {
@@ -34,7 +45,9 @@ GQ.Dataset = Backbone.Model.extend({
   randomQuestion: function() {
     var answerFeature = this.randomFeature(),
         optionFeatures = [answerFeature],
-        randomOptionFeature;
+        randomOptionFeature,
+        nameAttr = this.get('nameAttribute'),
+        featureType = this.get('featureType');
 
     //TODO: n options
     _.times(3, function() {
@@ -48,27 +61,30 @@ GQ.Dataset = Backbone.Model.extend({
       optionFeatures.push(randomOptionFeature);
     }, this);
 
-    var answer = answerFeature.properties.NAME,
+    var answer = answerFeature.properties[nameAttr],
         options = _.chain(optionFeatures)
                     .map(function(feature) {
-                      return feature.properties.NAME;
+                      return feature.properties[nameAttr];
                     })
                     .shuffle()
                     .value();
 
     return new GQ.Question({ feature: answerFeature, 
-                              text: "Which county is this?", 
+                              text: "Which " + featureType + " is this?", 
                               options: options, 
                               answer: answer});
   },
 
-  //TODO: params!
   getMapView: function() {
-    return { lat: 53, lon: -2, alt: 6 }
+    return this.get('mapView');
   },
 
   getFeatures: function() {
     return this.get('geoJson');
   }
 
+});
+
+GQ.DatasetList = Backbone.Collection.extend({
+  model: GQ.Dataset
 });

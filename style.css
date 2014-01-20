@@ -6,6 +6,7 @@ h1 > small {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+
 #map {
 	height: 500px;
     width: 500px;
@@ -19,24 +20,24 @@ h1 > small {
     font-family: 'Roboto Slab', Georgia, serif;
 }
 
-#questions > ul {
+ul.block-list {
     list-style-type: none;
     margin: 20px 0;
     padding: 0;
 }
 
-#questions > ul > li {
+ul.block-list > li {
     margin: 0;
     padding: 10px;
     border-top: solid 1px #ddd;
     cursor: pointer;
 }
 
-#questions > ul > li:last-child {
+ul.block-list > li:last-child {
     border-bottom: solid 1px #ddd;
 }
 
-#questions > ul > li:hover {
+ul.block-list > li:hover {
     background-color: #d9edf7;
     font-weight: bold;
 }
