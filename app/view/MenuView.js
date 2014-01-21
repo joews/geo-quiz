@@ -1,15 +1,27 @@
 var GQ = GQ || {};
 
 GQ.MenuView = Backbone.View.extend({
-	el: $('#menu-view'),
+	id: 'menu-view',
+	template: _.template($('#template-menu-view').html()),
+
+	events: {
+		'click': 'childClicked',
+	},
+
+	childClicked: function(e, f) {
+		this.$('li.menu-item > .start-quiz').hide();
+		$(e.target).find('.start-quiz').show();
+	},
 
 	render: function() {
-		var	$listEl = $('#menu-items');
+		this.$el.html(this.template());
+
+		var	$listEl = this.$('.menu-items');
 
 		this.model.each(function(dataset) {
 			var childView = new GQ.MenuItemView({ model: dataset });
 			$listEl.append(childView.render().$el);
-		});
+		}, this);
 
 		return this;
 	}
@@ -17,15 +29,20 @@ GQ.MenuView = Backbone.View.extend({
 
 GQ.MenuItemView = Backbone.View.extend({
 	tagName: 'li',
+	className: 'menu-item',
 	template: _.template($('#template-menu-item').html()),
 
-	//TODO: we could do some kind of preview before
-	// going straight to the quiz
 	events: {
-		'click': 'onSelect'
+		'click': 'onSelect',
+		'click .start-quiz': 'onLoad',
 	},
 
-	onSelect: function(e) {
+	//Not sure about this pattern
+	onSelect: function() {
+		this.model.trigger('preview');
+	},
+
+	onLoad: function(e) {
 		this.model.fetchGeoJson();
 	},
 

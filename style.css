@@ -46,3 +46,10 @@ ul.block-list > li:hover {
     width: 100%;
     float: right;
 }
+
+.btn.start-quiz {
+    display: none;
+    float: right;
+    position: relative;
+    top: -7px;
+}

@@ -1,6 +1,7 @@
 # Geo Quiz Game
 
-A game that I am working on to learn [leaflet.js](http://leafletjs.com). The only dataset at the moment is [UK administrative areas](http://en.wikipedia.org/wiki/Administrative_geography_of_the_United_Kingdom).
+A game that I am working on to learn [Leaflet.js](http://leafletjs.com) and [Backbone.js](http://backbonejs.org/). It has a lot of rough edges.
+
 
 # Creating datasets
 
@@ -43,7 +44,10 @@ Data: Mike Bostock
 # TODO
 
  * Proper attribution of map data!
- * Remove previously-active states' special mouseout handler
  * If the currently-highlighted feature is off the map, scroll to it
  * Zoom appropriately on selecting features?
- * Display the map alongside 
+ * Don't re-select answers within a quiz
+ * Don't choose wrong answers twice
+ * Review answers at the end of a quiz
+ * Allow quitting mid-quiz
+ * Some colours!

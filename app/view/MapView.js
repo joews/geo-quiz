@@ -1,21 +1,46 @@
 GQ = GQ || {};
 
 GQ.MapView = Backbone.View.extend({
-  tagName: 'div',
-  id: 'map',
+  el: $('#map-view'),
+  defaultView: { lat: 15, lon: 0, alt: 2 },
 
   initialize: function() {
-    var mapView = this.model.get('mapView'),
-      lat = mapView.lat,
-      lon = mapView.lon,
-      alt = mapView.alt;
 
-    this.map = L.map('map').setView([lat, lon], alt);
+    this.map = L.map('map').setView(
+          [this.defaultView.lat, this.defaultView.lon], 
+          this.defaultView.alt);
+
+    this.tileLayer = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png', {
+      key: '531b6247b04f4b6eab2e9c49d0332403',
+      styleId: 116023 //No place names
+    }).addTo(this.map);
+
+  },
+
+  reset: function() {
+    if(this.geoJson) {
+      this.map.removeLayer(this.geoJson);
+    }
+
+    
+  },
+
+  setModel: function(model) {
+    this.model = model;
 
     this.geoJson = L.geoJson(this.model.get('features'), { 
       style: this.mapStyle,
       onEachFeature: this.onEachFeature.bind(this),
     }).addTo(this.map);
+
+    this.resetLayers();
+
+    var mapView = this.model.get('mapView'),
+      lat = mapView.lat,
+      lon = mapView.lon,
+      alt = mapView.alt;
+
+    this.map.setView([lat, lon], alt);
   },
 
   mapStyle: function(feature) {
@@ -58,8 +83,8 @@ GQ.MapView = Backbone.View.extend({
     };
 
     layer.on({
-      mouseover: highlightFeature,
-      mouseout: resetHighlight,
+      //mouseover: highlightFeature,
+      //mouseout: resetHighlight,
     });
   },
 
@@ -98,16 +123,11 @@ GQ.MapView = Backbone.View.extend({
     return found;
   },
 
+  setMapView: function(mapView) {
+    this.map.setView([mapView.lat, mapView.lon], mapView.alt);
+  },
+
   render: function() {
-
-
-
-    L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png', {
-      key: '531b6247b04f4b6eab2e9c49d0332403',
-      styleId: 116023 //No place names
-    }).addTo(this.map);
-
-
     return this;
   }
 
