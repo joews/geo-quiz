@@ -1,7 +1,6 @@
 # Geo Quiz Game
 
-A game that I am working on to learn [Leaflet.js](http://leafletjs.com) and [Backbone.js](http://backbonejs.org/). It has a lot of rough edges.
-
+A basic map quiz game that I built to learn [Leaflet.js](http://leafletjs.com) and [Backbone.js](http://backbonejs.org/).
 
 # Creating datasets
 
@@ -42,12 +41,13 @@ Data: Mike Bostock
 
 
 # TODO
-
+ * Backbone routing
  * Proper attribution of map data!
  * If the currently-highlighted feature is off the map, scroll to it
+
+# Future TODO - things I would like to do but probably don't have time to:
+ * Re-design MapView/QuizView interaction
+ * Better responsive design for map - make it bigger where possible
  * Zoom appropriately on selecting features?
- * Don't re-select answers within a quiz
- * Don't choose wrong answers twice
  * Review answers at the end of a quiz
- * Allow quitting mid-quiz
- * Some colours!
+ * Improve visual design

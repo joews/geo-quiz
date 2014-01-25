@@ -9,7 +9,15 @@ GQ.Dataset = Backbone.Model.extend({
     objectSet: '',
     nameAttribute: 'NAME',
     featureType: '',
+    selectedAnswers: [], //Keep a cache of the answers we have used
+                         // so far in this quiz to avoid repeats
     mapView: { lat: 90, lon: 0, alt: 8 }
+  },
+
+  //Prepare for a new quiz - clean the list of previously-selected
+  // answers
+  reset: function() {
+    this.set('selectedAnswers', []);
   },
 
   //Lazy load map data
@@ -43,18 +51,30 @@ GQ.Dataset = Backbone.Model.extend({
   },
 
   randomQuestion: function() {
-    var answerFeature = this.randomFeature(),
-        optionFeatures = [answerFeature],
-        randomOptionFeature,
-        nameAttr = this.get('nameAttribute'),
-        featureType = this.get('featureType');
+    //Pick an answer. If we have previously used the 
+    // random answer in this quiz, pick another one.
+    var selectedAnswers = this.get('selectedAnswers'),
+        answerFeature = this.randomFeature();
+
+    while(_.include(selectedAnswers, answerFeature)) {
+      answerFeature = this.randomFeature();
+    }
+
+    selectedAnswers.push(answerFeature);
+    this.set('selectedAnswers', selectedAnswers);
+
+    //Pick a number of options
+    var optionFeatures = [answerFeature],
+      randomOptionFeature,
+      nameAttr = this.get('nameAttribute'),
+      featureType = this.get('featureType');
 
     //TODO: n options
     _.times(3, function() {
-      //Make sure we don't re-select the answer feature
-      //TODO: avoid re-selecting the same answer feature within a quiz
-      randomOptionFeature = answerFeature;
-      while(randomOptionFeature == answerFeature) {
+
+      //Don't re-select the answer or an option that we have previously used
+      randomOptionFeature = this.randomFeature();
+      while(_.include(optionFeatures, randomOptionFeature)) {
         randomOptionFeature = this.randomFeature();
       }
 

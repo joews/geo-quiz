@@ -6,8 +6,18 @@ GQ.QuizView = Backbone.View.extend({
   id: 'quiz-view',
   template: _.template($('#template-quiz-view').html()),
 
-  initialize: function() {
-    this.mapView = undefined;
+  events: {
+    'click .quit': 'quit'
+  },
+
+  initialize: function(options) {
+    this.mapView = options.mapView;
+
+    //It would be better for MapView to have a dedicated model,
+    // which controlling views alter to update MapView. The current
+    // design could lead to conflicts between controlling views that
+    // each believe they "own" the MapView.
+    this.mapView.setModel(this.model);
 
     this.subtitle = this.model.get('dataset').get('name');
 
@@ -19,13 +29,9 @@ GQ.QuizView = Backbone.View.extend({
     this.model.on('complete', this.onComplete.bind(this));
   },
 
-  start: function() {
-    this.model.start();
-  },
-
-  //TMP! we should use events for this
-  setMapView: function(mapView) {
-    this.mapView = mapView;
+  quit: function() {
+    mapView.reset();
+    this.trigger('exit');
   },
 
   //Called when the model has a new question
@@ -35,8 +41,8 @@ GQ.QuizView = Backbone.View.extend({
     this.questionView = new GQ.QuestionView({ model: question });
     this.renderSubView(this.questionView);
 
-    //Maybe MapView should control this, but this will allow
-    // use more flexibility with different types of questions
+    //Maybe MapView should control this, but external control
+    // will allow more flexibility with different types of questions
     feature  = question.get('feature'),
     layer = this.mapView.findLayerByFeature(feature);
     this.mapView.resetLayers();    
@@ -69,6 +75,10 @@ GQ.QuizView = Backbone.View.extend({
     this.progressView.render();
 
     this.$('#progress').html(this.progressView.$el);
+
+    //Once the view is rendered, the quiz can start
+    this.model.start();
+
     return this;
   }
 

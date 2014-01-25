@@ -21,8 +21,6 @@ GQ.MapView = Backbone.View.extend({
     if(this.geoJson) {
       this.map.removeLayer(this.geoJson);
     }
-
-    
   },
 
   setModel: function(model) {
@@ -60,55 +58,52 @@ GQ.MapView = Backbone.View.extend({
     function highlightFeature(e) {
       var targetLayer = e.target;
 
-      targetLayer.setStyle({
-        weight: 2,
-        color: '#666',
-        dashArray: '2',
-        fillOpacity: 0.7
-      });
+      //Don't change the style of currently active (highlighted) areas
+      if(!targetLayer.active) {
+        targetLayer.setStyle({
+          weight: 2,
+          color: '#666',
+          dashArray: '2',
+          fillOpacity: 0.7
+        });
 
-      //IE and Opera get this wrong
-      if (!L.Browser.ie && !L.Browser.opera) {
-        targetLayer.bringToFront();
+        //IE and Opera get this wrong
+        if (!L.Browser.ie && !L.Browser.opera) {
+          targetLayer.bringToFront();
+        }
       }
     };
 
     function resetHighlight(e) {
       var targetLayer = e.target;
-      //Prevent this layer obscuring layers we have intentionally
-      // sent to the front after mouseout
-      //TODO: check this isn't an active layer - could we add a property to the given layer?
-      targetLayer.bringToBack();
-      that.geoJson.resetStyle(targetLayer);
+
+      if(!targetLayer.active) {
+        //Prevent this layer obscuring layers we have intentionally
+        // sent to the front after mouseout
+        targetLayer.bringToBack();
+        that.geoJson.resetStyle(targetLayer);
+      }
     };
 
     layer.on({
-      //mouseover: highlightFeature,
-      //mouseout: resetHighlight,
+      mouseover: highlightFeature,
+      mouseout: resetHighlight,
     });
   },
 
-  //TODO: I think the geoJson should be provided by events
-  // from the model
   resetLayers: function() {
     var that = this;
     this.geoJson.eachLayer(function(layer) {
+      layer.active = false;
       that.geoJson.resetStyle(layer);
       layer.bringToBack();
-
-      //TODO: prevent active layers from keeping
-      // their special mouseout function
     });
   },
 
   setActive: function(layer) {
-    function applyStyle() {
-      layer.setStyle({color: 'red'});
-      layer.bringToFront();
-    }
-
-    applyStyle();
-    layer.on('mouseout', function() { applyStyle() });
+    layer.setStyle({color: 'red'});
+    layer.bringToFront();
+    layer.active = true;
   },
 
   findLayerByFeature: function(feature) {

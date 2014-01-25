@@ -7,15 +7,6 @@ $(function() {
 
 	function showView(view) {
 		if(activeView) activeView.remove();
-
-		mapView.reset();
-
-		//TMP! should use events
-		if(view.setMapView) {
-			mapView.setModel(view.model);
-			view.setMapView(mapView);
-		}
-
 		setSubtitle(view.subtitle);
 
 		$activeViewEl.html(view.render().$el);
@@ -29,24 +20,24 @@ $(function() {
 		}
 	}
 
+	//Create a QuizView and start a quiz
 	function startQuiz(dataset) {
 		var features = dataset.get('features'),
 			quiz = new GQ.Quiz({ dataset: dataset, nQuestions: 10 }),
-			view = new GQ.QuizView({ model: quiz });
+			view = new GQ.QuizView({ model: quiz, mapView: mapView });
 
 		view.on('restart', function() {
 			startQuiz(dataset);
 		});
 
 		view.on('exit', function() {
-			startMenu();
+			menu();
 		});
 
 		showView(view);
-		view.start();
 	}
 
-	function startMenu() {
+	function menu() {
 		var datasetList = new GQ.DatasetList(GQ.datasets),
 			view = new GQ.MenuView({ model: datasetList });
 
@@ -62,6 +53,7 @@ $(function() {
 		showView(view);
 	}
 
-	startMenu()
+	//Initial state: show menu
+	menu()
 
 });
