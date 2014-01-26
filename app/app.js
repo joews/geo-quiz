@@ -27,6 +27,7 @@ $(function() {
 			view = new GQ.QuizView({ model: quiz, mapView: mapView });
 
 		view.on('restart', function() {
+			mapView.reset();
 			startQuiz(dataset);
 		});
 

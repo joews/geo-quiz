@@ -43,11 +43,9 @@ Data: Mike Bostock
 # TODO
  * Backbone routing
  * Proper attribution of map data!
- * If the currently-highlighted feature is off the map, scroll to it
 
 # Future TODO - things I would like to do but probably don't have time to:
  * Re-design MapView/QuizView interaction
  * Better responsive design for map - make it bigger where possible
- * Zoom appropriately on selecting features?
  * Review answers at the end of a quiz
  * Improve visual design

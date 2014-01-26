@@ -9,7 +9,8 @@ GQ.datasets = [
 		objectSet: 'uk',
 		nameAttribute: 'NAME_2',
 		featureType: 'administrative unit',
-		mapView: { lat: 53, lon: -2, alt: 6 }
+		mapView: { lat: 53, lon: -2, alt: 6 },
+		maxZoom: 8
 	},
 	{
 		name: "UK Historical Counties",
@@ -18,7 +19,8 @@ GQ.datasets = [
 		objectSet: 'uk-counties',
 		nameAttribute: 'NAME',
 		featureType: 'county',
-		mapView: { lat: 53, lon: -2, alt: 6 }
+		mapView: { lat: 53, lon: -2, alt: 6 },
+		maxZoom: 9
 	},
 	{	
 		name: "US States",
@@ -27,6 +29,7 @@ GQ.datasets = [
 		objectSet: 'us-states',
 		nameAttribute: 'name',
 		featureType: 'state',
-		mapView: { lat: 50, lon: -120, alt: 2 }
+		mapView: { lat: 50, lon: -120, alt: 2 },
+		maxZoom: 5
 	},
 ];

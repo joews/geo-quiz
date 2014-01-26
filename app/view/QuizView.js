@@ -30,7 +30,7 @@ GQ.QuizView = Backbone.View.extend({
   },
 
   quit: function() {
-    mapView.reset();
+    this.mapView.reset();
     this.trigger('exit');
   },
 

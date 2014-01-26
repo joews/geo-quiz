@@ -24,6 +24,7 @@ GQ.Quiz = Backbone.Model.extend({
 
 		this.set('mapView', dataset.getMapView());
 		this.set('features', dataset.getFeatures());
+		this.set('maxZoom', dataset.get('maxZoom'));
 	},
 
 	onAnswer: function(isCorrect) {

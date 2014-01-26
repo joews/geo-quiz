@@ -104,6 +104,32 @@ GQ.MapView = Backbone.View.extend({
     layer.setStyle({color: 'red'});
     layer.bringToFront();
     layer.active = true;
+
+    var zoom = this.map.getZoom();
+
+    var layerBounds = layer.getBounds(),
+        mapBounds = this.map.getBounds(),
+        layerWidth = Math.abs(layerBounds.getEast() - layerBounds.getWest()),
+        mapWidth = Math.abs(mapBounds.getEast() - mapBounds.getWest()),
+        ratio = layerWidth / mapWidth;
+
+    //Only zoom in to this layer if it is smaller than 5%
+    // of the map's width or greater than 25% of the map's width
+    //TODO: should we consider height as well? the max of the two
+    // ratios? mean of the ratios?
+    //Parameters may need tuning.
+    var needToZoom = (ratio < 0.05 || ratio > 0.25);
+
+    if(needToZoom) {
+      var maxZoom = this.model.get('maxZoom'),
+          fitZoom = this.map.getBoundsZoom(layer.getBounds()) - 2;
+
+      //Don't zoom in further than this layer will allow
+      zoom = _.min([fitZoom, maxZoom]);
+    }
+
+    //Center map on the active layer, zooming if required
+    this.map.setView(layer.getBounds().getCenter(), zoom);
   },
 
   findLayerByFeature: function(feature) {
