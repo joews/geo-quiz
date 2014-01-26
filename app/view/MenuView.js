@@ -37,12 +37,14 @@ GQ.MenuItemView = Backbone.View.extend({
 		'click .start-quiz': 'onLoad',
 	},
 
-	//Not sure about this pattern
 	onSelect: function() {
 		this.model.trigger('preview');
 	},
 
 	onLoad: function(e) {
+		e.stopPropagation();
+		$(e.target).button('loading');
+		
 		this.model.fetchGeoJson();
 	},
 

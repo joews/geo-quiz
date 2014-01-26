@@ -60,6 +60,7 @@ GQ.QuizView = Backbone.View.extend({
       parent: this
     });
 
+    this.$('.quit').hide();
     this.renderSubView(this.completeView.render());
   },
 

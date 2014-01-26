@@ -65,14 +65,14 @@
       You scored <strong><%= correct %></strong> out of <strong><%= total %></strong>
     </p>
     <p>
-      <button class="restart">Restart</button>
-      <button class="exit">Back to menu</button>
+      <button class="btn btn-primary restart">Restart</button>
+      <button class="btn btn-success exit">Back to menu</button>
     </p>
   </script>
   
   <script type="text/template" id="template-menu-item">
     <%= name %>
-    <button class="btn btn-primary start-quiz">Start</button>
+    <button class="btn btn-primary start-quiz" data-loading-text="Loading...">Start</button>
   </script>
 
   <script src="http://code.jquery.com/jquery-2.0.3.js"></script>

@@ -6,21 +6,23 @@ GQ.MapView = Backbone.View.extend({
 
   initialize: function() {
 
-    this.map = L.map('map').setView(
-          [this.defaultView.lat, this.defaultView.lon], 
-          this.defaultView.alt);
+    this.map = L.map('map');
+    this.reset();
 
     this.tileLayer = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png', {
       key: '531b6247b04f4b6eab2e9c49d0332403',
       styleId: 116023 //No place names
     }).addTo(this.map);
-
   },
 
   reset: function() {
     if(this.geoJson) {
       this.map.removeLayer(this.geoJson);
     }
+
+    this.map.setView(
+      [this.defaultView.lat, this.defaultView.lon], 
+        this.defaultView.alt);
   },
 
   setModel: function(model) {
