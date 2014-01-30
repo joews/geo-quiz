@@ -11,7 +11,7 @@ GQ.Dataset = Backbone.Model.extend({
     featureType: '',
     selectedAnswers: [], //Keep a cache of the answers we have used
                          // so far in this quiz to avoid repeats
-    mapView: { lat: 90, lon: 0, alt: 8 }
+    lookAt: { lat: 90, lon: 0, alt: 8 }
   },
 
   //Prepare for a new quiz - clean the list of previously-selected
@@ -37,27 +37,14 @@ GQ.Dataset = Backbone.Model.extend({
 
   //Remaining methods should not be called 
   // until the data is loaded 
-
-  //TODO: move to a utility object
-  randomInt: function(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  },
-
-  randomFeature: function() {
-    var geoJson = this.get('geoJson'),
-        nFeatures = geoJson.features.length,
-        index = this.randomInt(0, nFeatures - 1);
-    return geoJson.features[index];
-  },
-
   randomQuestion: function() {
     //Pick an answer. If we have previously used the 
     // random answer in this quiz, pick another one.
     var selectedAnswers = this.get('selectedAnswers'),
-        answerFeature = this.randomFeature();
+        answerFeature = this._randomFeature();
 
     while(_.include(selectedAnswers, answerFeature)) {
-      answerFeature = this.randomFeature();
+      answerFeature = this._randomFeature();
     }
 
     selectedAnswers.push(answerFeature);
@@ -73,9 +60,9 @@ GQ.Dataset = Backbone.Model.extend({
     _.times(3, function() {
 
       //Don't re-select the answer or an option that we have previously used
-      randomOptionFeature = this.randomFeature();
+      randomOptionFeature = this._randomFeature();
       while(_.include(optionFeatures, randomOptionFeature)) {
-        randomOptionFeature = this.randomFeature();
+        randomOptionFeature = this._randomFeature();
       }
 
       optionFeatures.push(randomOptionFeature);
@@ -95,13 +82,20 @@ GQ.Dataset = Backbone.Model.extend({
                               answer: answer});
   },
 
-  getMapView: function() {
-    return this.get('mapView');
-  },
-
   getFeatures: function() {
     return this.get('geoJson');
-  }
+  },
+
+  _randomInt: function(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  },
+
+  _randomFeature: function() {
+    var geoJson = this.get('geoJson'),
+        nFeatures = geoJson.features.length,
+        index = this._randomInt(0, nFeatures - 1);
+    return geoJson.features[index];
+  },
 
 });
 

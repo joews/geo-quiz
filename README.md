@@ -39,13 +39,17 @@ Data: Mike Bostock
     wget http://bl.ocks.org/mbostock/raw/2206489/7110de3d8412433d3222c9b7e3ac6593593162b2/us-states.json
     toposjon -p -o us-states.topo.json us-states.json
 
+# Ideas for future development
 
-# TODO
- * Backbone routing
- * Proper attribution of map data!
-
-# Future TODO - things I would like to do but probably don't have time to:
- * Re-design MapView/QuizView interaction
+ * More types of question
  * Better responsive design for map - make it bigger where possible
+ * "Explore" view 
  * Review answers at the end of a quiz
  * Improve visual design
+ * Don't draw map outlines until map zoom animations are finished
+
+# Key things I learned
+
+ * Design from routing inwards - retrofitting is hard and will probably need design changes
+ * Always tell old models to stop listening to events
+ * Make sure Leaflet zoom levels are valid before setting

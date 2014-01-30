@@ -2,48 +2,58 @@ GQ = GQ || {};
 
 GQ.MapView = Backbone.View.extend({
   el: $('#map-view'),
-  defaultView: { lat: 15, lon: 0, alt: 2 },
 
   initialize: function() {
 
+    //Initialise map element
+    //Should this happen in render?
     this.map = L.map('map');
-    this.reset();
-
     this.tileLayer = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png', {
       key: '531b6247b04f4b6eab2e9c49d0332403',
       styleId: 116023 //No place names
     }).addTo(this.map);
+    this.map.setView([15, 0], 2);
+
+    this.listenTo(this.model, 'change:lookAt', this._setLookAt.bind(this));
+    this.model.listenTo(this.model, 'change:features', this._onFeatureChange.bind(this));
+    this.model.listenTo(this.model, 'change:activeFeature', this._setActiveFeature.bind(this));
+    this.model.listenTo(this.model, 'clear', this._clear.bind(this));
   },
 
-  reset: function() {
+  _clear: function() {
+    this._resetData();
+  },
+
+  _onFeatureChange: function(model, features) {
+    if(features.length > 0) {
+      this._setGeoJsonLayer(features);
+    }
+  },
+
+  _setLookAt: function(model, lookAt) {
+    this.map.setView([lookAt.lat, lookAt.lon], lookAt.alt);
+  },
+
+  _setActiveFeature: function(model, activeFeature) {
+    this._resetLayers();
+    var layer = this._findLayerByFeature(activeFeature);
+    this._setActive(layer);
+  },
+
+  _resetData: function() {
     if(this.geoJson) {
       this.map.removeLayer(this.geoJson);
     }
-
-    this.map.setView(
-      [this.defaultView.lat, this.defaultView.lon], 
-        this.defaultView.alt);
   },
 
-  setModel: function(model) {
-    this.model = model;
-
-    this.geoJson = L.geoJson(this.model.get('features'), { 
-      style: this.mapStyle,
-      onEachFeature: this.onEachFeature.bind(this),
+  _setGeoJsonLayer: function(features) {
+    this.geoJson = L.geoJson(features, { 
+      style: this._mapStyle,
+      onEachFeature: this._onEachFeature.bind(this),
     }).addTo(this.map);
-
-    this.resetLayers();
-
-    var mapView = this.model.get('mapView'),
-      lat = mapView.lat,
-      lon = mapView.lon,
-      alt = mapView.alt;
-
-    this.map.setView([lat, lon], alt);
   },
 
-  mapStyle: function(feature) {
+  _mapStyle: function(feature) {
     return {
       fillColor: '#dddddd',
       weight: 2,
@@ -54,7 +64,7 @@ GQ.MapView = Backbone.View.extend({
     }
   },
 
-  onEachFeature: function(feature, layer) {
+  _onEachFeature: function(feature, layer) {
     var that = this;
 
     function highlightFeature(e) {
@@ -93,16 +103,18 @@ GQ.MapView = Backbone.View.extend({
     });
   },
 
-  resetLayers: function() {
-    var that = this;
-    this.geoJson.eachLayer(function(layer) {
-      layer.active = false;
-      that.geoJson.resetStyle(layer);
-      layer.bringToBack();
-    });
+  _resetLayers: function() {
+    if(this.geoJson) {
+      var that = this;
+      this.geoJson.eachLayer(function(layer) {
+        layer.active = false;
+        that.geoJson.resetStyle(layer);
+        layer.bringToBack();
+      });
+    }
   },
 
-  setActive: function(layer) {
+  _setActive: function(layer) {
     layer.setStyle({color: 'red'});
     layer.bringToFront();
     layer.active = true;
@@ -134,7 +146,7 @@ GQ.MapView = Backbone.View.extend({
     this.map.setView(layer.getBounds().getCenter(), zoom);
   },
 
-  findLayerByFeature: function(feature) {
+  _findLayerByFeature: function(feature) {
     var found;
 
     this.geoJson.eachLayer(function(layer) {
@@ -145,14 +157,6 @@ GQ.MapView = Backbone.View.extend({
 
     return found;
   },
-
-  setMapView: function(mapView) {
-    this.map.setView([mapView.lat, mapView.lon], mapView.alt);
-  },
-
-  render: function() {
-    return this;
-  }
 
 });
 

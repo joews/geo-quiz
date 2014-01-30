@@ -1,38 +1,58 @@
 GQ.Quiz = Backbone.Model.extend({
 	defaults: {
-		currentQuestionNumber: -1, //so we need to call next to start the quiz
+		currentQuestionNumber: -1,
 		questions: [],
 		score: 0
 	},
 
 	//This model should always be instantiated 
 	// with dataset and nQuestions parameters:
-	initialize: function() {
-		var n = this.get('nQuestions'),
-			dataset = this.get('dataset'),
-			questions = [];
+	initialize: function(options) {
+		var dataset = this.get('dataset');
+		this.listenTo(dataset, 'loaded', this._onDatasetLoaded.bind(this));
+	},
+
+	//Load the geographical data necessary for this quiz
+	load: function() {
+		this.get('dataset').fetchGeoJson();
+	},
+
+	//Start this quiz by loading the first question
+	start: function() {
+		this._next();
+	},
+	
+	numberOfQuestions: function() {
+		return this.get('questions').length
+	},
+
+	currentQuestionNumber: function() {
+		return this.get('currentQuestionNumber');
+	},
+
+	_onDatasetLoaded: function() {
+		var questions = [],
+			n = this.get('nQuestions'),
+			dataset = this.get('dataset');
 
 		_.times(n, function() {
 			//TODO: request specific types, or a distribution
 			// of specific types of question?
 			var question = dataset.randomQuestion();
-			question.on('answer', this.onAnswer.bind(this));
+			this.listenTo(question, 'answer', this._onAnswer.bind(this));
 			questions.push(question);
 		}, this);
 
 		this.set({ questions: questions });
 
-		this.set('mapView', dataset.getMapView());
 		this.set('features', dataset.getFeatures());
 		this.set('maxZoom', dataset.get('maxZoom'));
+
+		this.trigger('ready');
 	},
 
-	onAnswer: function(isCorrect) {
+	_onAnswer: function(isCorrect) {
 		this._record(isCorrect);
-		this._next();
-	},
-
-	start: function() {
 		this._next();
 	},
 
@@ -44,14 +64,6 @@ GQ.Quiz = Backbone.Model.extend({
 			this.set('currentQuestionNumber', n);
 			this.trigger('next', this._nextQuestion());
 		}
-	},
-
-	numberOfQuestions: function() {
-		return this.get('questions').length
-	},
-
-	currentQuestionNumber: function() {
-		return this.get('currentQuestionNumber');
 	},
 
 	_nextQuestion: function() {

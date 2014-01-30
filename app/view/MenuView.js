@@ -5,10 +5,10 @@ GQ.MenuView = Backbone.View.extend({
 	template: _.template($('#template-menu-view').html()),
 
 	events: {
-		'click': 'childClicked',
+		'click': '_childClicked',
 	},
 
-	childClicked: function(e, f) {
+	_childClicked: function(e, f) {
 		this.$('li.menu-item > .start-quiz').hide();
 		$(e.target).find('.start-quiz').show();
 	},
@@ -33,19 +33,11 @@ GQ.MenuItemView = Backbone.View.extend({
 	template: _.template($('#template-menu-item').html()),
 
 	events: {
-		'click': 'onSelect',
-		'click .start-quiz': 'onLoad',
+		'click': '_onSelect',
 	},
 
-	onSelect: function() {
+	_onSelect: function() {
 		this.model.trigger('preview');
-	},
-
-	onLoad: function(e) {
-		e.stopPropagation();
-		$(e.target).button('loading');
-		
-		this.model.fetchGeoJson();
 	},
 
 	render: function() {

@@ -10,10 +10,10 @@ GQ.QuestionView = Backbone.View.extend({
 	template: _.template($('#template-question').html()),
 
 	events: {
-		'click #options > li': 'answer'
+		'click #options > li': '_answer'
 	},
 
-	answer: function(e) {
+	_answer: function(e) {
 		var option = $(e.target).attr('data-option');
 		this.model.answer(option); 
 		return this;

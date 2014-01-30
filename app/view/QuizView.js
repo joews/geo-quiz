@@ -11,46 +11,44 @@ GQ.QuizView = Backbone.View.extend({
   },
 
   initialize: function(options) {
-    this.mapView = options.mapView;
 
-    //It would be better for MapView to have a dedicated model,
-    // which controlling views alter to update MapView. The current
-    // design could lead to conflicts between controlling views that
-    // each believe they "own" the MapView.
-    this.mapView.setModel(this.model);
+    this.mapState = options.mapState;
+    this.dataset = this.model.get('dataset');
 
-    this.subtitle = this.model.get('dataset').get('name');
+    this.mapState.set('maxZoom', this.dataset.get('maxZoom'));
+
+    this.subtitle = this.dataset.get('name');
 
     this.progressView = new GQ.ProgressView({ model: this.model });
     this.questionView = undefined;
     this.completeView = undefined;
 
-    this.model.on('next', this.onNextQuestion.bind(this));
-    this.model.on('complete', this.onComplete.bind(this));
+    this.listenTo(this.model, 'ready', this._onReady.bind(this));
+    this.listenTo(this.model, 'next', this._onNextQuestion.bind(this));
+    this.listenTo(this.model, 'complete', this._onComplete.bind(this));
+
+    this.mapState.lookAt(this.dataset.get('lookAt'));
+
+    this.model.load();
   },
 
-  quit: function() {
-    this.mapView.reset();
-    this.trigger('exit');
+  _onReady: function() {
+    var features = this.dataset.get('geoJson');
+    this.mapState.setFeatures(features);
+    this.render();
   },
 
   //Called when the model has a new question
-  onNextQuestion: function(question) {
+  _onNextQuestion: function(question) {
     if(this.questionView) this.questionView.remove();
  
     this.questionView = new GQ.QuestionView({ model: question });
     this.renderSubView(this.questionView);
-
-    //Maybe MapView should control this, but external control
-    // will allow more flexibility with different types of questions
-    feature  = question.get('feature'),
-    layer = this.mapView.findLayerByFeature(feature);
-    this.mapView.resetLayers();    
-    this.mapView.setActive(layer);
+    this.mapState.setActiveFeature(question.get('feature'));
   },
 
   //Called when the model indicates it is complete
-  onComplete: function() {
+  _onComplete: function() {
     if(this.completeView) this.completeView.remove();
     if(this.questionView) this.questionView.remove();
     this.progressView.remove();
@@ -72,9 +70,7 @@ GQ.QuizView = Backbone.View.extend({
     this.$el.html(this.template());
     this.$subEl = this.$('#content');
 
-    this.mapView.render();
     this.progressView.render();
-
     this.$('#progress').html(this.progressView.$el);
 
     //Once the view is rendered, the quiz can start

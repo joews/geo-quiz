@@ -1,60 +1,86 @@
-$(function() {
+GQ.AppRouter = Backbone.Router.extend({
 
-	//TODO: router
-	var activeView,
-		mapView = new GQ.MapView().render(),
-		$activeViewEl = $('#active-view');
+	routes: {
+		'quiz/:dataset': 'loadQuiz',
+		'': 'mainMenu'
+	},
 
-	function showView(view) {
-		if(activeView) activeView.remove();
-		setSubtitle(view.subtitle);
+	initialize: function() {
+		this.activeView = undefined;
+		this.mapState = new GQ.MapState();
+		this.$activeViewEl = $('#active-view');
+		this.datasetList = new GQ.DatasetList(GQ.datasets);
 
-		$activeViewEl.html(view.render().$el);
-		activeView = view;
-	}
+		new GQ.MapView({ model: this.mapState }).render();
 
-	function setSubtitle(subtitle) {
+	},
+
+	showView: function(view) {
+		if(this.activeView) {
+			this.activeView.remove();
+			delete this.activeView;
+		}
+		
+		this.setSubtitle(view.subtitle);
+		this.$activeViewEl.html(view.$el);
+		this.activeView = view;
+	},
+
+	//TODO: an AppView that controls this logic
+	setSubtitle: function(subtitle) {
 		$('h1 small').remove();
 		if(subtitle) {
 			$('h1').append($("<small>").text(subtitle));
 		}
-	}
+	},
 
-	//Create a QuizView and start a quiz
-	function startQuiz(dataset) {
-		var features = dataset.get('features'),
-			quiz = new GQ.Quiz({ dataset: dataset, nQuestions: 10 }),
-			view = new GQ.QuizView({ model: quiz, mapView: mapView });
+	loadQuiz: function(datasetLabel) {
 
-		view.on('restart', function() {
-			mapView.reset();
-			startQuiz(dataset);
-		});
+		//Make sure stale event handlers don't hang around
+		if(this.quiz) { 
+			this.quiz.stopListening();
+			this.quiz = null;
+		}
+		
+		var dataset = this.datasetList.findWhere({ label: datasetLabel });
+		this.quiz =  new GQ.Quiz({ dataset: dataset, nQuestions: 10 });
+		
+		var view = new GQ.QuizView({ model: this.quiz, mapState: this.mapState });
+		
 
-		view.on('exit', function() {
-			menu();
-		});
+			//TODO: we need to get this stopListening logic in
+			// the right place - restarting now works well, but 
+			// quitting does not. Make sure that the current quiz
+			// ALWAYS stops listening when we get out of it
+			// - probably do it in here, so whatever route
+			// we take gets rid of listeners.
 
-		showView(view);
-	}
+			view.on('restart', function() {
+				this.loadQuiz(datasetLabel);
+			}.bind(this));
 
-	function menu() {
-		var datasetList = new GQ.DatasetList(GQ.datasets),
-			view = new GQ.MenuView({ model: datasetList });
+			this.showView(view);
+	},
 
-		datasetList.each(function(dataset) {
-			dataset.on('loaded', function() {
-				startQuiz(dataset);
-			})
-			.on('preview', function() {
-				mapView.setMapView(this.get('mapView'));
+	mainMenu: function() {
+		var view = new GQ.MenuView({ model: this.datasetList }),
+			router = this;
+
+		this.mapState.clear();
+		this.mapState.lookAtDefault();
+		//TODO: into menu view
+		this.datasetList.each(function(dataset) {
+			this.listenTo(dataset, 'preview', function() {
+				router.mapState.lookAt(dataset.get('lookAt'));
 			});
 		}, this);
 
-		showView(view);
+		this.showView(view.render());
 	}
 
-	//Initial state: show menu
-	menu()
+});
 
+$(function() {
+	new GQ.AppRouter();
+	Backbone.history.start();
 });

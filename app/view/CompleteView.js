@@ -10,16 +10,11 @@ GQ.CompleteView = Backbone.View.extend({
 	},
 
 	events: {
-		'click .restart': 'restart',
-		'click .exit': 'exit'
+		'click .restart': '_restart',
 	},
 
-	restart: function() {
+	_restart: function() {
 		this.parent.trigger('restart', this.model);
-	},
-
-	exit: function() {
-		this.parent.trigger('exit');
 	},
 
 	render: function() {

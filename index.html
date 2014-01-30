@@ -31,7 +31,7 @@
     <div id="content"></div>
     <div id="progress"></div>
     <div>
-      <button class="btn btn-warning pull-right quit">Quit this quiz</button>
+      <a href="#/" class="btn btn-warning pull-right quit">Quit this quiz</a>
     </div>
   </script>
 
@@ -65,14 +65,14 @@
       You scored <strong><%= correct %></strong> out of <strong><%= total %></strong>
     </p>
     <p>
-      <button class="btn btn-primary restart">Restart</button>
-      <button class="btn btn-success exit">Back to menu</button>
+      <a class="btn btn-primary restart">Restart</a>
+      <a class="btn btn-success exit" href="#/">Back to menu</a>
     </p>
   </script>
   
   <script type="text/template" id="template-menu-item">
     <%= name %>
-    <button class="btn btn-primary start-quiz" data-loading-text="Loading...">Start</button>
+    <a class="btn btn-primary start-quiz" href="#/quiz/<%= label %>">Start</a>
   </script>
 
   <script src="http://code.jquery.com/jquery-2.0.3.js"></script>
@@ -89,6 +89,7 @@
   <script src="app/model/Question.js"></script>
   <script src="app/model/Dataset.js"></script>
   <script src="app/model/Quiz.js"></script>
+  <script src="app/model/MapState.js"></script>
   <script src="app/view/MenuView.js"></script>
   <script src="app/view/ProgressView.js"></script>
   <script src="app/view/CompleteView.js"></script>
