@@ -2,7 +2,7 @@
 
 A basic map quiz game that I built to learn [Leaflet.js](http://leafletjs.com) and [Backbone.js](http://backbonejs.org/).
 
-# Creating datasets
+## Creating datasets
 
 With much help from [Mike Bostock](http://bost.ocks.org/mike/)'s [Let's Make a Map](http://bost.ocks.org/mike/map/).
 
@@ -14,10 +14,13 @@ Install GDAL and topojson:
 
 We use [topojson](https://github.com/mbostock/topojson) to reduce the size of geographic datasets. For example, the UK counties dataset is reduced from 3mb (geojson) to 107kb (topojson).
 
-## UK administrative regions data (complex!)
-Data: GADM
+## Datasets
 
-The UK's administrative geography is complex.
+### UK administrative regions data
+
+`app/data/uk-topo.json`
+
+Data: [GADM](http://www.gadm.org/)
 
     wget http://biogeo.ucdavis.edu/data/gadm2/shp/GBR_adm.zip
     unzip GBR_adm.zip 
@@ -25,23 +28,30 @@ The UK's administrative geography is complex.
 	topojson -o uk.topo.json uk.json --properties --simplify-proportion 0.2
     cp counties.topo.json $PROJECT_DIR/data/.
     
-## UK historical counties data (too historical!)
-Data: county-borders.co.uk    
+## UK historical counties data
 
-    wget "http://www.county-borders.co.uk/Historic_Counties_of_England&Wales_longlat.zip"
-    unzip "Historic_Counties_of_England&Wales_longlat.zip"
-		ogr2ogr -f GEOJSON uk-counties.json "Historic_Counties_of_England&Wales_longlat.shp"
-    topojson -o uk-counties.topo.json uk-counties.json --properties --simplify-proportion 0.2   
+`app/data/uk-counties-topo.json`
+
+Data: [The Historical County Borders project](http://county-borders.co.uk) ([licence](http://county-borders.co.uk/hcbp_5.htm))
+
+    $ wget "http://www.county-borders.co.uk/Historic_Counties_of_England&Wales_longlat.zip"
+    $ unzip "Historic_Counties_of_England&Wales_longlat.zip"
+    $ ogr2ogr -f GEOJSON uk-counties.json "Historic_Counties_of_England&Wales_longlat.shp"
+    $ topojson -o uk-counties.topo.json uk-counties.json --properties --simplify-proportion 0.2   
+
  
-## US States
-Data: Mike Bostock
+## US States data
+
+`app/data/us-states-topo.json`
+
+Data: Mike Bostock's [us.json](http://bl.ocks.org/mbostock/raw/4090846/us.json)
 
     wget http://bl.ocks.org/mbostock/raw/2206489/7110de3d8412433d3222c9b7e3ac6593593162b2/us-states.json
     toposjon -p -o us-states.topo.json us-states.json
 
 # Ideas for future development
 
- * More types of question
+ * More types of question (_find this place on the map_, _find the region that contains this city_, ...)
  * Better responsive design for map - make it bigger where possible
  * "Explore" view 
  * Review answers at the end of a quiz
@@ -53,3 +63,4 @@ Data: Mike Bostock
  * Design from routing inwards - retrofitting is hard and will probably need design changes
  * Always tell old models to stop listening to events
  * Make sure Leaflet zoom levels are valid before setting
+ * Views should communicate only through events on Models. Inter-view dependencies are messy.
