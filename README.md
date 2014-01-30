@@ -2,6 +2,8 @@
 
 A basic map quiz game that I built to learn [Leaflet.js](http://leafletjs.com) and [Backbone.js](http://backbonejs.org/).
 
+[Take a geo quiz!](http://jwhitfieldseed.github.io/geo-quiz/)
+
 ## Creating datasets
 
 With much help from [Mike Bostock](http://bost.ocks.org/mike/)'s [Let's Make a Map](http://bost.ocks.org/mike/map/).
@@ -57,6 +59,7 @@ Data: Mike Bostock's [us.json](http://bl.ocks.org/mbostock/raw/4090846/us.json)
  * Review answers at the end of a quiz
  * Improve visual design
  * Don't draw map outlines until map zoom animations are finished
+ * Fix the "zoom to map feature" function - Alaska causes strange behaviour
 
 # Key things I learned
 
