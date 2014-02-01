@@ -16,7 +16,11 @@ GQ.Question = Backbone.Model.extend({
   },
 
   answer: function(givenAnswer) {
+    console.debug("You said: " + givenAnswer);
+    console.debug("Answer:   " + this.get('answer'));
+
     var isCorrect = (givenAnswer === this.get('answer'));
+
     this.set({
       correct: isCorrect,
       givenAnswer: givenAnswer

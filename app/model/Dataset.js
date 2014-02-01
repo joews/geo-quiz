@@ -14,14 +14,11 @@ GQ.Dataset = Backbone.Model.extend({
     lookAt: { lat: 90, lon: 0, alt: 8 }
   },
 
-  //Prepare for a new quiz - clean the list of previously-selected
-  // answers
-  reset: function() {
-    this.set('selectedAnswers', []);
-  },
+  
 
   //Lazy load map data
   fetchGeoJson: function() {
+    this._reset();
     if(this.get('geoJson')) {
       this.trigger('loaded', this.get('geoJson'));
     } else {
@@ -37,6 +34,9 @@ GQ.Dataset = Backbone.Model.extend({
 
   //Remaining methods should not be called 
   // until the data is loaded 
+
+  //This would be better encapsulated as getNQuestions(n), so we don't have to
+  // retain state across quizzes
   randomQuestion: function() {
     //Pick an answer. If we have previously used the 
     // random answer in this quiz, pick another one.
@@ -95,6 +95,12 @@ GQ.Dataset = Backbone.Model.extend({
         nFeatures = geoJson.features.length,
         index = this._randomInt(0, nFeatures - 1);
     return geoJson.features[index];
+  },
+
+  //Prepare for a new quiz - clean the list of previously-selected
+  // answers
+  _reset: function() {
+    this.set('selectedAnswers', []);
   },
 
 });
